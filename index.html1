@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Alibaba</title>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+    input, button { padding: 8px; margin: 5px 0; width: 100%; }
+    button { background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+
+  <h1>Mini Alibaba</h1>
+
+  <!-- Connexion / Inscription -->
+  <div class="box">
+    <h2>Inscription</h2>
+    <input type="email" id="signupEmail" placeholder="Email">
+    <input type="password" id="signupPassword" placeholder="Mot de passe">
+    <button onclick="signup()">S’inscrire</button>
+
+    <h2>Connexion</h2>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Mot de passe">
+    <button onclick="login()">Se connecter</button>
+  </div>
+
+  <!-- Ajouter un produit -->
+  <div class="box">
+    <h2>Ajouter un produit</h2>
+    <input type="text" id="productName" placeholder="Nom du produit">
+    <input type="number" id="productPrice" placeholder="Prix">
+    <button onclick="addProduct()">Ajouter</button>
+  </div>
+
+  <!-- Passer une commande -->
+  <div class="box">
+    <h2>Passer une commande</h2>
+    <input type="text" id="orderProduct" placeholder="Nom du produit">
+    <input type="number" id="orderQuantity" placeholder="Quantité">
+    <button onclick="addOrder()">Commander</button>
+  </div>
+
+  <script>
+    // Connexion à Supabase
+    const { createClient } = supabase;
+    const supabaseUrl = "https://kiebsjqdjnykpuhjehoh.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpZWJzanFkam55a3B1aGplaG9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxNDE0NDEsImV4cCI6MjA3MzcxNzQ0MX0.RjGqRCp8eDn3QCUWushVdcRexdYdDKgsYQr3BQ3KyEI";
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // Inscription
+    async function signup() {
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const { error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) alert("Erreur inscription : " + error.message);
+      else alert("Inscription réussie !");
+    }
+
+    // Connexion
+    async function login() {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) alert("Erreur connexion : " + error.message);
+      else alert("Connexion réussie !");
+    }
+
+    // Ajouter un produit
+    async function addProduct() {
+      const name = document.getElementById("productName").value;
+      const price = document.getElementById("productPrice").value;
+      const { error } = await supabaseClient.from("produits").insert([{ name, price }]);
+      if (error) alert("Erreur ajout produit : " + error.message);
+      else alert("Produit ajouté !");
+    }
+
+    // Passer une commande
+    async function addOrder() {
+      const product = document.getElementById("orderProduct").value;
+      const quantity = document.getElementById("orderQuantity").value;
+      const { error } = await supabaseClient.from("commandes").insert([{ product, quantity }]);
+      if (error) alert("Erreur commande : " + error.message);
+      else alert("Commande passée !");
+    }
+  </script>
+</body>
+</html>
