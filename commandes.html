@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Commandes</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="supabase.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Commandes</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="produits.html">Produits</a>
+    </nav>
+  </header>
+  <div class="container">
+    <h2>Passer une commande</h2>
+    <input id="produit-id" type="number" placeholder="ID du produit">
+    <input id="quantite" type="number" placeholder="Quantité">
+    <button id="passer-commande">Commander</button>
+
+    <h2>Mes commandes</h2>
+    <ul id="liste-commandes"></ul>
+  </div>
+
+  <script type="module">
+    import { supabase } from './supabase.js'
+
+    async function chargerCommandes() {
+      let { data, error } = await supabase.from("commandes").select("*")
+      if (error) console.error(error)
+      else {
+        let ul = document.getElementById("liste-commandes")
+        ul.innerHTML = ""
+        data.forEach(c => {
+          let li = document.createElement("li")
+          li.textContent = `Commande #${c.id} - Produit ${c.produit_id} x${c.quantite}`
+          ul.appendChild(li)
+        })
+      }
+    }
+
+    document.getElementById("passer-commande").onclick = async () => {
+      let produit_id = document.getElementById("produit-id").value
+      let quantite = document.getElementById("quantite").value
+      let { error } = await supabase.from("commandes").insert([{ produit_id, quantite }])
+      if (error) alert(error.message)
+      else chargerCommandes()
+    }
+
+    chargerCommandes()
+  </script>
+</body>
+</html>
